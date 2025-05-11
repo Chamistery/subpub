@@ -1,5 +1,7 @@
 # SubPub
 
+Выполнил **Камлев Виталий**
+
 Простой Pub-Sub сервис на Go с gRPC интерфейсом. Использованы паттерны:
 - *Observer* (Publish–Subscribe): пускаются события (Publish), а подписчики их получают через свои очереди (Subscribe)
 - *Dependency Injection*: в организации сервисов инициализация через конструкторы (NewSubPub, NewServer(bus, log)) и передача зависимостей в обработчики
@@ -8,7 +10,7 @@
 ## Структура проекта
 
 ```
-my-subpub-project/
+subpub/
 ├── cmd/
 │   ├── example/       # CLI-пример использования pkg/subpub
 │   └── server/        # gRPC-сервис
@@ -48,6 +50,7 @@ protoc --go_out=. --go-grpc_out=. api/pubsub/pubsub.proto
 
 ```bash
 # или использовать скрипт
+chmod +x scripts/build.sh
 scripts/build.sh
 ```
 
@@ -80,7 +83,6 @@ go run cmd/example/main.go
 ## Демонстрация медленного подписчика
 
 ```bash
-# запуск примера со "slow" и "fast" подписчиками
 go run examples/slow_subscriber/main.go
 ```
 
@@ -95,7 +97,7 @@ go run examples/slow_subscriber/main.go
     go test ./pkg/subpub -v
   ```
 
-- Внутренний сервис (где есть моки или интеграционные тесты):
+- Внутренний сервис `internal/service`:
   ```bash
     go test ./internal/service -v
   ```
@@ -110,13 +112,6 @@ go run examples/slow_subscriber/main.go
 ```bash
     go test ./... -coverprofile=coverage.out
     go tool cover -html=coverage.out
-```
-
-## Линтинг и форматирование
-
-```bash
-go fmt ./...
-# опционально: golangci-lint run
 ```
 
 ## Логирование

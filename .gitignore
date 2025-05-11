@@ -7,3 +7,5 @@ coverage.out
 .idea/
 .vscode/
 .env
+api/pubsub/*.pb.go
+api/pubsub/*.grpc.pb.go

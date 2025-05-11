@@ -14,20 +14,20 @@ func main() {
 
 	// Подписчик 1 — медленный
 	bus.Subscribe("topic-slow", func(msg interface{}) {
-		fmt.Printf("[Slow Subscriber] received: %v, processing...", msg)
+		fmt.Printf("[Slow Subscriber] received: %v, processing...\n", msg)
 		time.Sleep(200 * time.Millisecond)
 		fmt.Println("[Slow Subscriber] done processing")
 	})
 
 	// Подписчик 2 — быстрый
 	bus.Subscribe("topic-slow", func(msg interface{}) {
-		fmt.Printf("[Fast Subscriber] received: %v", msg)
+		fmt.Printf("[Fast Subscriber] received: %v\n", msg)
 	})
 
 	// Публикуем несколько сообщений
 	for i := 1; i <= 5; i++ {
 		msg := fmt.Sprintf("message %d", i)
-		fmt.Printf("Publishing: %s", msg)
+		fmt.Printf("Publishing: %s\n", msg)
 		bus.Publish("topic-slow", msg)
 		time.Sleep(50 * time.Millisecond)
 	}

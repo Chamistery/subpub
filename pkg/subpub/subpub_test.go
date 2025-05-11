@@ -50,7 +50,6 @@ func TestSlowSubscriberDoesNotBlock(t *testing.T) {
 
 	fastDone := make(chan struct{})
 	_, _ = bus.Subscribe("slow", func(msg interface{}) {
-		// slow handler sleeps
 		time.Sleep(100 * time.Millisecond)
 	})
 	_, _ = bus.Subscribe("slow", func(msg interface{}) {
@@ -61,7 +60,6 @@ func TestSlowSubscriberDoesNotBlock(t *testing.T) {
 
 	select {
 	case <-fastDone:
-		// ok
 	case <-time.After(50 * time.Millisecond):
 		t.Error("fast subscriber was blocked by slow one")
 	}

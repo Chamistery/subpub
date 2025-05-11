@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/Chamistery/subpub/internal/logger"
+	"go.uber.org/zap/zapcore"
+	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -13,7 +16,6 @@ import (
 
 	pb "github.com/Chamistery/subpub/api/pubsub"
 	"github.com/Chamistery/subpub/cmd/server/config"
-	"github.com/Chamistery/subpub/internal/logger"
 	svc "github.com/Chamistery/subpub/internal/service"
 	"github.com/Chamistery/subpub/pkg/subpub"
 )
@@ -25,9 +27,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	log := logger.New()
-	defer log.Sync()
-	log.Info("config loaded", zap.Any("cfg", cfg))
+	lvl := zapcore.DebugLevel
+	logger.Init(lvl)
+	defer logger.Log.Sync()
+	logger.Log.Info("config loaded", zap.Any("cfg", cfg))
 
 	bus := subpub.NewSubPub()
 	defer bus.Close(context.Background())
@@ -37,21 +40,21 @@ func main() {
 		log.Fatal("failed to listen", zap.Error(err))
 	}
 	grpcServer := grpc.NewServer()
-	handler := svc.NewServer(bus, log)
+	handler := svc.NewServer(bus, logger.Log)
 	pb.RegisterPubSubServer(grpcServer, handler)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-quit
-		log.Info("shutting down server")
+		logger.Log.Info("shutting down server")
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 		defer cancel()
 		go grpcServer.GracefulStop()
 		bus.Close(ctx)
 	}()
 
-	log.Info("starting gRPC server", zap.String("addr", cfg.Port))
+	logger.Log.Info("starting gRPC server", zap.String("addr", cfg.Port))
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal("serve error", zap.Error(err))
 	}

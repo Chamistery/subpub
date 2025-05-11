@@ -1,13 +1,14 @@
-import "google/protobuf/empty.proto";
-
 syntax = "proto3";
 
-service PubSub {
-  // Подписка (сервер отправляет поток событий)
-  rpc Subscribe(SubscribeRequest) returns (stream Event);
+option go_package = "github.com/Chamistery/subpub/api/pubsub;pubsub";
 
-  // Публикация (классический запрос-ответ)
-  rpc Publish(PublishRequest) returns (google.protobuf.Empty);
+package pubsub;
+
+import "google/protobuf/empty.proto";
+
+service PubSub {
+  rpc Subscribe(SubscribeRequest) returns (stream Event);
+  rpc Publish(PublishRequest)  returns (google.protobuf.Empty);
 }
 
 message SubscribeRequest {
