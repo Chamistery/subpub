@@ -1,0 +1,9 @@
+# .gitignore
+bin/
+*.out
+*.log
+*.swp
+coverage.out
+.idea/
+.vscode/
+.env
